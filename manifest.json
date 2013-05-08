@@ -1,0 +1,27 @@
+{
+  "name": "FBless",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Spend less on Facebook and you'll be blessed",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": [
+      "lib/jquery.min.js",
+      "lib/persistence.js",
+      "lib/persistence.store.sql.js",
+      "lib/persistence.store.websql.js",
+      "util.js",
+      "backend.js",
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "content_security_policy": 
+    "script-src 'self' 'unsafe-eval' https://*.facebook.com https://connect.facebook.net https://*.akamaihd.net; object-src 'self'"
+}
