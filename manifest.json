@@ -2,7 +2,7 @@
   "name": "FBless",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Spend less on Facebook and you'll be blessed",
+  "description": "Spend less time on Facebook and you'll be blessed",
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"

@@ -88,12 +88,8 @@ function gen_attention(full_url, time){
 
 	// update the end time for last attention and get ready to start a new attention
 	last_attention.time_end = time;
-
-	//only save Facebook attention
-	if(last_attention.domain.indexOf(fb_domain) != -1){
-		save_last_attention(time);
-		console.log("New facebook attention saved!");
-	}
+	//save attention to database
+	save_last_attention(time);
 
 	// refresh last attention
 	//console.log("Current: " + domain_trimed +"  at " + time.toISOString());

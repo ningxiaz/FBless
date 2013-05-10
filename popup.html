@@ -2,14 +2,56 @@
 <html>
   <head>
     <title>FBless Popup</title>
+    <link href='http://fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
     <style>
       body {
-        min-width: 357px;
+        min-width: 400px;
         overflow-x: hidden;
         font-family: Arial, Helvetica;
+        background-color: #eee;
+        padding: 15px;
       }
 
+      .logo{
+        font-family: 'Chewy', cursive;
+        font-size: 32px;
+        color: #A0DC3F;
+        float: left;
+      }
 
+      .clear{
+        clear: both;
+      }
+
+      .settings{
+        float: right;
+        background: url(images/settings.png) no-repeat 0 0;
+        background-size: 20px auto;
+        width: 20px;
+        height: 20px;
+        opacity: 0.7;
+        margin-top: 14px;
+        cursor: pointer;
+      }
+
+      .banner{
+        padding-bottom: 5px;
+        border-bottom: solid 1px #ccc;
+      }
+      .content{
+        font-family: 'PT Sans', sans-serif;
+        font-size: 16px;
+        color: #777;
+      }
+      .times, .time{
+        color: #FF5C26;
+        font-weight: 700;
+      }
+      .goal{
+        color: #A0DC3F;
+        font-weight: 700;
+      }
     </style>
     <!--
       - JavaScript and HTML must be in separate files: see our Content Security
@@ -22,8 +64,17 @@
     <script src="popup.js"></script>
   </head>
   <body>
+      <div class="banner">
+          <div class="logo">FBless</div>
+          <div class="settings"></div>
+          <div class="clear"></div>
+      </div>
       <div class="content">
-          <p>Today you've visited Facebook: <span class="times"></span> times and spent <span class="time"></span> on it.</p>
+          <p>Today you've visited Facebook: <span class="times"></span> times and have spent <span class="time"></span> on it. </p>
+
+          <p>Remember you decide to limit it to <span class="goal">15m</span> a day. </p>
+
+          <p class="suggestion"></p>
       </div>
   </body>
 </html>
