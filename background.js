@@ -37,38 +37,19 @@ var log_level = 3;
 var yogurt_settings;
 var time_so_far = 0;
 
+//for storage variables
+var storage = chrome.storage.local;
 
-// fetch setting
-// get data from local storage
-// var storage = chrome.storage.local;
-
-// storage.get(function(items) {
-//     yogurt_settings = items;
-//     if (chrome.runtime.lastError) {
-//       console.log('Error: ' + chrome.runtime.lastError.message);
-//     } else {
-//       console.log('Settings loaded');
-//     }
-//     var should_update_storage = false;
-//     if (!yogurt_settings.hasOwnProperty('site_list')) {
-//       should_update_storage = true;
-//       yogurt_settings.site_list = DEFAULT_SITES;
-//     }
-//     if (!yogurt_settings.hasOwnProperty('color_theme')) {
-//       should_update_storage = true;
-//       yogurt_settings.color_theme = COLOR_CHOICES[0];
-//     }
-//     // update the storage when necessary
-//     if (should_update_storage) {
-// 		storage.set(yogurt_settings, function() {
-// 		    if (chrome.runtime.lastError) {
-// 		      console.log('Error: ' + chrome.runtime.lastError.message);
-// 		    }else{
-// 		      console.log("First time options saved from app.js");
-// 		    }
-// 		});
-//     }
-//  });
+//set last sent date if undefined, which means first time to use this plug in
+if(storage.last_date_sent == undefined){
+	console.log("First time usage, set default report status");
+	var today = new Date();
+	var yesterday = new Date();
+	yesterday.setDate(today.getDate() - 1);	
+	
+	//save to local storage
+	storage.last_date_sent = yesterday;
+}
 
 // generate user attention from a tab/domain
 function gen_attention(full_url, time){
@@ -118,6 +99,40 @@ function save_last_attention(time){
 
 // handle multiple broser windows and the condition where all window lose focus
 function attach_window_listeners(){
+	//when a window is created
+	chrome.windows.onCreated.addListener(function(windowId) {
+		console.log('new window created, check report status');
+
+		var last_date_sent = storage.last_date_sent;
+		console.log(last_date_sent);
+
+		var today = new Date();
+		var yesterday = new Date();
+		yesterday.setDate(today.getDate() - 1);
+
+		//first time usage, set yesterday as default
+		if(last_date_sent == undefined){	
+			//save to local storage
+			storage.last_date_sent = yesterday;
+			return;
+		}
+
+		var test = new Date();
+		test.setDate(last_date_sent.getDate());
+
+		while(true){
+			test.setDate(test.getDate() + 1);
+			//all date reports are sent except today, which is still in progress!
+			if(same_day(test, today)){
+				console.log("no need to send report now");
+				return;
+			}
+
+			send_daily_report(test);
+		}
+
+	});
+
 	// check if window focus changed
 	chrome.windows.onFocusChanged.addListener(function(windowId) {
 		
@@ -137,6 +152,50 @@ function attach_window_listeners(){
 			});
 		}
 		
+	});
+}
+
+function send_daily_report(date){
+	console.log("ready to send daily report for "+date.toDateString());
+
+	var query_date = format_query_date(date);
+	var fb_time = 0;
+	var total_time = 0;
+
+	//query facebook data
+	query_attention_by_domain_on_date(query_date,fb_domain,function(results){
+		for(var r =0; r<results.length; r++){
+			fb_time += results[r].life_duration;
+		}
+
+		query_attention_by_date(query_date, function(results){
+			for(var r =0; r<results.length; r++){
+				total_time += results[r].life_duration;
+			}
+
+			//all time information is ready, send via AJAX
+			var report = {date: query_date, fb_time: fb_time, total_time: total_time};
+			ajax_send_report(report);
+		});
+	});
+
+}
+
+function ajax_send_report(report){
+	$.ajax({
+	    url: "http://fbless.herokuapp.com/save_report",
+	    type: "POST",
+	    dataType: "json",
+	    data: JSON.stringify({report: report}),
+	    contentType: "application/json",
+	    success: function(data) {
+	      console.log(data);
+	      console.log('process sucess');
+	   	},
+
+	    error: function() {
+	      console.log('create account error');
+	    }
 	});
 }
 

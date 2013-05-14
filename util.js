@@ -177,3 +177,20 @@ function format_date(date){
 	return formatted;
 }
 
+function same_day(date1, date2){
+	return (date1.getFullYear() == date2.getFullYear())&&(date1.getMonth() == date2.getMonth())&&(date1.getDate() == date2.getDate());
+}
+
+function format_query_date(date){
+	var dd = date.getDate();
+	var mm = date.getMonth() + 1;
+	var yyyy = date.getFullYear();
+	if(dd < 10){
+		dd = '0' + dd;
+	}
+	if(mm < 10){
+		mm = '0' + mm;
+	}
+	return yyyy+'-'+mm+'-'+dd;
+}
+
