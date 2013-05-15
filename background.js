@@ -182,21 +182,22 @@ function send_daily_report(date){
 }
 
 function ajax_send_report(report){
-	$.ajax({
-	    url: "http://fbless.herokuapp.com/save_report",
-	    type: "POST",
-	    dataType: "json",
-	    data: JSON.stringify({report: report}),
-	    contentType: "application/json",
-	    success: function(data) {
-	      console.log(data);
-	      console.log('process sucess');
-	   	},
+	// var req = new XMLHttpRequest;
+ //      req.open('POST', 'http://fbless.herokuapp.com:3001/save_report', true);
+ //      req.setRequestHeader('Content-Type', 'application/json');
+ //      req.send('{"name":"tobi","species":"ferret"}');
+      //console.log(req.responseText);
+    var jsonp_url = "http://fbless.herokuapp.com/save_report?date="+report.date+"&fb_time="+report.fb_time+"&total_time="+report.total_time;
 
-	    error: function() {
-	      console.log('create account error');
-	    }
-	});
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", jsonp_url, true);
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState == 4) {
+	       //handle the xhr response here
+	       console.log("nice to hear back! " + xhr.responseText);
+	  }
+	}
+	xhr.send();
 }
 
 // attach listeners to activities in web browser tabs

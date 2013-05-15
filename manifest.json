@@ -20,8 +20,9 @@
   },
   "permissions": [
     "tabs",
-    "storage"
+    "storage",
+    "http://fbless.herokuapp.com/"
   ],
   "content_security_policy": 
-    "script-src 'self' 'unsafe-eval' https://*.facebook.com https://connect.facebook.net https://*.akamaihd.net; object-src 'self'"
+    "script-src 'self'; object-src 'self'"
 }
