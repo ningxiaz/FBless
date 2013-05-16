@@ -1,0 +1,96 @@
+<html>
+	<head><title>FBless Options</title></head>
+	<link href='http://fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+	<style>
+      body {
+        font-family: 'PT Sans', Arial, Helvetica;
+        background-color: #eee;
+      }
+
+      .main{
+      	width: 600px;
+      	margin: 40px auto;
+      }
+
+      .logo{
+        font-family: 'Chewy', cursive;
+        font-size: 60px;
+        color: #A0DC3F;
+        float: left;
+      }
+
+      .clear{
+        clear: both;
+      }
+
+      .banner{
+        padding-bottom: 5px;
+        border-bottom: solid 1px #ccc;
+      }
+
+      input{
+        display: block;
+        width: 100%;
+        height: 40px;
+        font-size: 18px;
+        padding: 0 5px;
+        margin-bottom: 1em;
+        background-color: #ccc;
+        border: none;
+        outline: none;
+        color: #666;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+      }
+
+      #goal_form{
+      	padding: 20px 0;
+      }
+
+      .submit{
+        color: #FF5C26;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .notice{
+        color: #A0DC3F;
+        font-size: 14px;
+        margin-left: 10px;
+      }
+
+      h3{
+      	color: #A0DC3F;
+        font-weight: 700;
+        font-size: 22px;
+      }
+    </style>
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
+     -->
+    <script src="lib/jquery.min.js"></script>
+	<body>
+		<div class="main">
+			<div class="banner">
+	          <div class="logo">FBless</div>
+	          <div class="clear"></div>
+	      	</div>
+	      	<form id="goal_form">
+	      		<input type="text", name="goal", id="goal", placeholder="Enter number of minutes you want to spend on FB" />
+	      		<a class="submit">Set goal!</a>
+	            <span class="notice"></span>
+	      	</form>
+	      	<div class="stats">
+	      		<h3>Your Stats</h3>
+
+	      	</div>
+		</div>
+	</body>
+
+	<script src="options.js"></script>
+</html>

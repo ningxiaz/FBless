@@ -2,9 +2,62 @@ var duration = "";
 var duration_timer = null;
 var curr_domain = "";
 var facebook_domain = "facebook.com";
+var user = null;
 
 $(document).ready(function(){
 	console.log("[FBless] From console!");
+	chrome.extension.sendMessage({"action":"get_user"},function(response){
+		user = response.user;
+		//not logged in
+		if(user == null){
+			$('.login').show();
+		}
+		else{
+			$('.content').show();
+			fill_stats();
+		}
+	});
+
+	$('.submit').click(function(){
+		$('.notice').html("Logging in...");
+		var email = $('#email').val();
+		var password = $('#password').val();
+		authenticate(email, password);
+	});	
+
+
+});
+
+function authenticate(email, password){
+	var jsonp_url = "http://fbless.herokuapp.com/simple_auth?email="+email+"&password="+password;
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", jsonp_url, true);
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState == 4) {
+	       //handle the xhr response here
+	       console.log("nice to hear back! ");
+	       var rs = JSON.parse(xhr.responseText);
+	       console.log(rs);
+
+	       if(rs.fb_id != undefined){
+	       		chrome.extension.sendMessage({"user":rs ,"action":"set_user"},function(response){
+	       			user = rs;
+	       			$('.login').hide();
+	       			$('.content').show();
+					fill_stats();
+	       		});
+	       }
+
+	       else{
+	       		$('.notice').html("Oops, wrong email or password");
+	       }
+	  }
+	}
+	xhr.send();
+}
+
+function fill_stats(){
 	chrome.extension.sendMessage({"domain":facebook_domain ,"action":"get_stats"},function(response){
 		console.log(response);
 		$('.times').text((response.times == 0)? "1" : response.times);
@@ -27,6 +80,4 @@ $(document).ready(function(){
 		});
 
 	});
-
-	
-});
+}

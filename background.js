@@ -49,6 +49,9 @@ if(storage.last_date_sent == undefined){
 	
 	//save to local storage
 	storage.last_date_sent = yesterday;
+
+	//also save first day of usage
+	storage.first_day = today;
 }
 
 // generate user attention from a tab/domain
@@ -291,6 +294,29 @@ function attach_popup_script_listeners(){
 						"times":results.length,
 						"duration":Math.round((dura + time_so_far)/1000)
 					});
+				});
+			}
+
+			if(request.action == "get_user"){
+				var user = storage.user;
+
+				if(user == undefined){
+					sendResponse({
+						"user": null
+					});
+				}
+				else{
+					sendResponse({
+						"user": user
+					});
+				}
+			}
+
+			if(request.action == "set_user"){
+				storage.user = request.user;
+
+				sendResponse({
+					"success": true
 				});
 			}
 
