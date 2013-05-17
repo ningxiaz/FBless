@@ -24,6 +24,11 @@
         clear: both;
       }
 
+      .not_login{
+      	font-size: 18px;
+        color: #777;
+      }
+
       .banner{
         padding-bottom: 5px;
         border-bottom: solid 1px #ccc;
@@ -49,6 +54,10 @@
       	padding: 20px 0;
       }
 
+      #goal_form, .stats, .not_login{
+      	display: none;
+      }
+
       .submit{
         color: #FF5C26;
         font-size: 18px;
@@ -57,7 +66,7 @@
 
       .notice{
         color: #A0DC3F;
-        font-size: 14px;
+        font-size: 16px;
         margin-left: 10px;
       }
 
@@ -79,6 +88,9 @@
 			<div class="banner">
 	          <div class="logo">FBless</div>
 	          <div class="clear"></div>
+	      	</div>
+	      	<div class="not_login">
+	      		<p>Oops, it seems that you haven't logged in yet. Click the plugin icon on your address bar to log in :)</p>
 	      	</div>
 	      	<form id="goal_form">
 	      		<input type="text", name="goal", id="goal", placeholder="Enter number of minutes you want to spend on FB" />

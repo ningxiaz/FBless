@@ -25,7 +25,9 @@ $(document).ready(function(){
 		authenticate(email, password);
 	});	
 
-
+	$('.settings').click(function(){
+		
+	});
 });
 
 function authenticate(email, password){

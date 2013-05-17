@@ -120,6 +120,11 @@ function attach_window_listeners(){
 			return;
 		}
 
+		//the user is not logged in yet, don't need to worry about report
+		if(storage.user == undefined){
+			return;
+		}
+
 		var test = new Date();
 		test.setDate(last_date_sent.getDate());
 
@@ -177,7 +182,8 @@ function send_daily_report(date){
 			}
 
 			//all time information is ready, send via AJAX
-			var report = {date: query_date, fb_time: fb_time, total_time: total_time};
+			var report = {user_id: storage.user.fb_id, date: query_date, fb_time: fb_time, total_time: total_time};
+			//console.log(report);
 			ajax_send_report(report, date);
 		});
 	});
@@ -185,7 +191,7 @@ function send_daily_report(date){
 }
 
 function ajax_send_report(report, date){
-    var jsonp_url = "http://fbless.herokuapp.com/save_report?date="+report.date+"&fb_time="+report.fb_time+"&total_time="+report.total_time;
+    var jsonp_url = "http://fbless.herokuapp.com/save_report?user_id="+report.user_id+"&date="+report.date+"&fb_time="+report.fb_time+"&total_time="+report.total_time;
 
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", jsonp_url, true);
@@ -320,6 +326,13 @@ function attach_popup_script_listeners(){
 				});
 			}
 
+			if(request.action == "save_goal"){
+				storage.goal = request.goal;
+
+				sendResponse({
+					"success": true
+				});
+			}
 			return true;
 			//sendResponse({"status":"ok"});
 			
