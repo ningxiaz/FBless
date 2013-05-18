@@ -36,6 +36,7 @@ var current_highlight_tab_index = 0;
 var log_level = 3;
 var yogurt_settings;
 var time_so_far = 0;
+var goal_failed_date = "";
 
 //for storage variables
 var storage = chrome.storage.local;
@@ -52,6 +53,31 @@ if(storage.last_date_sent == undefined){
 
 	//also save first day of usage
 	storage.first_day = today;
+}
+
+//goal is not set, default to be 30 minutes
+if(storage.goal == undefined){
+	storage.goal = 30;
+}
+
+function check_goal_failed(){
+	console.log("Checking goal!!!");
+	var today = x_days_ago_date(0);
+
+	if(today != goal_failed_date){
+		var fb_time = 0;
+		query_attention_by_domain_on_date(today,fb_domain,function(results){
+			for(var r =0; r<results.length; r++){
+				fb_time += results[r].life_duration;
+			}
+
+			fb_time = Math.round(fb_time/1000);//in seconds
+			if(fb_time > storage.goal*60){
+				console.log("AHHHHHH Goal failed!");
+				goal_failed_date = today;
+			}
+		});
+	}
 }
 
 // generate user attention from a tab/domain
@@ -74,6 +100,11 @@ function gen_attention(full_url, time){
 	last_attention.time_end = time;
 	//save attention to database
 	save_last_attention(time);
+
+	//see if it's a Facebook visit, if so, check whether it exceeds limit!
+	if(last_attention.domain == fb_domain){
+		check_goal_failed();
+	}
 
 	// refresh last attention
 	//console.log("Current: " + domain_trimed +"  at " + time.toISOString());
@@ -178,7 +209,9 @@ function send_daily_report(date){
 
 		query_attention_by_date(query_date, function(results){
 			for(var r =0; r<results.length; r++){
-				total_time += results[r].life_duration;
+				if(results[r].tab_domain != "not_in_browser"){
+					total_time += results[r].life_duration;
+				}
 			}
 
 			//all time information is ready, send via AJAX
@@ -328,9 +361,55 @@ function attach_popup_script_listeners(){
 
 			if(request.action == "save_goal"){
 				storage.goal = request.goal;
+				check_goal_failed(); //check goal settings to see whether goal is failed
 
 				sendResponse({
 					"success": true
+				});
+			}
+
+			if(request.action == "get_goal"){
+				sendResponse({
+					"goal": storage.goal
+				});
+			}
+
+			if(request.action == "get_first_day"){
+				sendResponse({
+					"first_day": storage.first_day
+				});
+			}
+
+			if(request.action == "get_daily_stats"){
+				var date = new Date(request.date);
+				var query_date = format_query_date(date);
+				var fb_time = 0;
+				var total_time = 0;
+				var fb_times = 0;
+
+				query_attention_by_domain_on_date(query_date, fb_domain, function(results){
+					for(var r =0; r<results.length; r++){
+						fb_time += results[r].life_duration;
+					}
+
+					fb_times = results.length;
+
+					query_attention_by_date(query_date, function(results){
+						for(var r =0; r<results.length; r++){
+							if(results[r].tab_domain != "not_in_browser"){
+								total_time += results[r].life_duration;
+							}
+						}
+
+						sendResponse({
+							"date": query_date,
+							"fb_time": Math.round(fb_time/1000),
+							"fb_times": fb_times,
+							"total_time": Math.round(total_time/1000)
+						});
+					});
+
+					
 				});
 			}
 			return true;

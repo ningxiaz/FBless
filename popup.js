@@ -18,6 +18,10 @@ $(document).ready(function(){
 		}
 	});
 
+	chrome.extension.sendMessage({"action":"get_goal"},function(response){
+		$('.goal').html(response.goal);
+	});
+
 	$('.submit').click(function(){
 		$('.notice').html("Logging in...");
 		var email = $('#email').val();
@@ -26,7 +30,7 @@ $(document).ready(function(){
 	});	
 
 	$('.settings').click(function(){
-		
+
 	});
 });
 

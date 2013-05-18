@@ -1,4 +1,5 @@
 var user = null;
+var first_day = null;
 
 $(document).ready(function(){
 	chrome.extension.sendMessage({"action":"get_user"},function(response){
@@ -11,6 +12,11 @@ $(document).ready(function(){
 			$('#goal_form').show();
 			$('.stats').show();
 		}
+	});
+
+	chrome.extension.sendMessage({"action":"get_goal"},function(response){
+		//console.log(response);
+		$('.notice').html("Your current goal is <em>"+response.goal+"</em> minites :)");
 	});
 
 	$('#goal_form .submit').click(function(){
@@ -26,6 +32,8 @@ $(document).ready(function(){
 			
 		}
 	});
+
+	fill_stats_table();
 });
 
 function save_new_goal(goal){
@@ -45,4 +53,29 @@ function save_new_goal(goal){
 
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function fill_stats_table(){
+	var today = new Date();
+
+	chrome.extension.sendMessage({"action":"get_first_day"},function(response){
+		first_day = new Date(response.first_day);
+
+		console.log(first_day);
+		var i = new Date();
+		i.setDate(first_day.getDate());
+
+		while(true){
+			if(same_day(i, today)){
+				return;
+			}
+
+			chrome.extension.sendMessage({"action":"get_daily_stats", "date": i}, function(response){
+				//console.log(response);
+				$('.stats').append("<div class=\"record\"><span class=\"date\">"+format_date(response.date)+"</span><span class=\"fb_times\">"+response.fb_times+"</span><span class=\"fb_time\">"+secondsToTime(response.fb_time)+"</span><span class=\"total_time\">"+secondsToTime(response.total_time)+"</span></div>");
+			});
+
+			i.setDate(i.getDate() + 1);
+		}
+	});
 }

@@ -2,40 +2,6 @@ function Site(domain,distraction) {
   this.domain = domain;
   this.distraction = distraction;
 }
-// row represetns a style, columns represent 6 colors used in the style, you can add more rows to make more styles in the congif page
-// make some wild colors!
-var COLOR_CHOICES = [
-	['#000000', '#FFFFFF', '#EEEEEE', '#DDDDDD', '#CCCCCC', '#FF2929'],
-	['#001020', '#E0F0F0', '#607080', '#90A0B0', '#902010', '#00EFFE'],
-	['#452059', '#FAFAFA', '#9B8DF3', '#C3E3BF', '#FBFFD8', '#f5a503'],
-	['#161616', '#099823', '#1C0100', '#62CF6D', '#18983E', '#f5a503'],
-	['#8A0528', '#F2D194', '#1C0100', '#F4CE76', '#FAA69C', '#FF1600'],
-    ['#012840', '#79c7d9', '#9bf2ea', '#8DE0A9', '#9dbf8e', '#f5a503'],
-    ['#FFFFFF', '#595859', '#0D131F', '#1E2E49', '#0D131F', '#000000']
-];
-
-var DEFAULT_SITES = [
-        new Site('facebook.com', 3),
-        new Site('renren.com', 3),
-        new Site('9gag.com', 3),
-        new Site('news.ycombinator.com', 3),
-        new Site('lifehacker.com', 3),
-        new Site('slashdot.org', 3),
-        new Site('youtube.com', 3),
-        new Site('reddit.com', 3),
-        new Site('wikipedia.com', 1),
-        new Site('engadget.com', 2),
-        new Site('twitter.com', 3)
-];
-
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
 
 function x_days_ago_date(x){
 	var today = new Date();
@@ -85,55 +51,6 @@ function secondsSinceDay(secs)
 function str_to_int(str) {
 	var match = str.match(/\d+/);
 	return parseInt(match[0], 10);
-}
-
-/**
- *  Opens a new window with generated png file
- */
-function open_window_with_img(width, height, ready) {
-	$(".collection_warning").hide();
-	if(daily_stats_shown == true){
-		recover_to_right(false);
-	}
-	$(ready).fadeIn(100);
-	setTimeout(function(){
-		var padding_x = 300;
-	    var padding_y = 150;
-
-		$(".group_cursor").hide();
-		$("line").hide();
-		var svg2 = $("svg").clone();
-		$("line").show();
-		var svg_html = $('<div>').append(svg2).html();
-
-		var svg_width = str_to_int($("svg").width());
-		var svg_height = str_to_int($("svg").height());
-
-		$('canvas')[0].width = svg_width + 2 * padding_x;
-		$('canvas')[0].height = svg_height + 2 * padding_y;
-
-		canvg('canvas', svg_html, {
-			offsetX: padding_x,
-			offsetY: padding_y,
-			ignoreDimensions: true,
-		});
-
-		var can = document.getElementsByTagName('canvas')[0];
-		var ctx = can.getContext('2d');
-		ctx.globalCompositeOperation = "destination-over";
-		// ctx.fillStyle = '#333';
-		var lineargradient = ctx.createLinearGradient(0, 0, 0, svg_height);
-		lineargradient.addColorStop(0, ColorLuminance(settings.color_theme[0],-0.4));
-		lineargradient.addColorStop(1, settings.color_theme[0]);
-		ctx.fillStyle = lineargradient;
-		ctx.fillRect(0, 0, 5000, 5000);
-
-		var w = window.open();
-		$(w.document.body).html($('<img src="' + canvas.toDataURL("image/png") + '" />'));
-		$(ready).hide();
-		$(".collection_warning").show();
-	},200);
-
 }
 
 // helper function to get domain from an url

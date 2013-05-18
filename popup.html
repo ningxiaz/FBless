@@ -4,24 +4,16 @@
     <title>FBless Popup</title>
     <link href='http://fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="base.css">
     <style>
       body {
         min-width: 400px;
         overflow-x: hidden;
-        font-family: Arial, Helvetica;
-        background-color: #eee;
         padding: 15px;
       }
 
       .logo{
-        font-family: 'Chewy', cursive;
         font-size: 32px;
-        color: #A0DC3F;
-        float: left;
-      }
-
-      .clear{
-        clear: both;
       }
 
       .settings{
@@ -41,7 +33,6 @@
       }
 
       .content, .login{
-        font-family: 'PT Sans', sans-serif;
         font-size: 16px;
         color: #777;
         display: none;
@@ -52,25 +43,7 @@
       }  
 
       .login input{
-        display: block;
         width: 220px;
-        height: 40px;
-        font-size: 18px;
-        padding: 0 5px;
-        margin-bottom: 1em;
-        background-color: #ccc;
-        border: none;
-        outline: none;
-        color: #666;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-      }
-
-      .submit{
-        color: #FF5C26;
-        font-size: 18px;
-        cursor: pointer;
       }
 
       .times, .time{
@@ -83,11 +56,7 @@
         font-weight: 700;
       }
 
-      .notice{
-        color: #A0DC3F;
-        font-size: 14px;
-        margin-left: 10px;
-      }
+      
     </style>
     <!--
       - JavaScript and HTML must be in separate files: see our Content Security
@@ -109,14 +78,14 @@
           <form id="login_form">
               <input type="text", name="email", id="email", placeholder="Email" />
               <input type="password", name="password", id="password", placeholder="Password">
-              <a class="submit">Log in</a>
+              <div class="submit">Log in</div>
               <span class="notice"></span>
           </form>
       </div>
       <div class="content">
           <p>Today you've visited Facebook: <span class="times"></span> times and have spent <span class="time"></span> on it. </p>
 
-          <p>Remember you decide to limit it to <span class="goal">15m</span> a day. </p>
+          <p>Remember you decide to limit it to <span class="goal">15</span> minutes a day. </p>
 
           <p class="suggestion"></p>
       </div>
