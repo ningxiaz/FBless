@@ -37,6 +37,7 @@ var log_level = 3;
 var yogurt_settings;
 var time_so_far = 0;
 var goal_failed_date = "";
+var daily_report_check_date = "";
 
 //for storage variables
 var storage = chrome.storage.local;
@@ -133,45 +134,6 @@ function save_last_attention(time){
 
 // handle multiple broser windows and the condition where all window lose focus
 function attach_window_listeners(){
-	//when a window is created
-	chrome.windows.onCreated.addListener(function(windowId) {
-		console.log('new window created, check report status');
-
-		var last_date_sent = storage.last_date_sent;
-		console.log(last_date_sent);
-
-		var today = new Date();
-		var yesterday = new Date();
-		yesterday.setDate(today.getDate() - 1);
-
-		//first time usage, set yesterday as default
-		if(last_date_sent == undefined){	
-			//save to local storage
-			storage.last_date_sent = yesterday;
-			return;
-		}
-
-		//the user is not logged in yet, don't need to worry about report
-		if(storage.user == undefined){
-			return;
-		}
-
-		var test = new Date();
-		test.setDate(last_date_sent.getDate());
-
-		while(true){
-			test.setDate(test.getDate() + 1);
-			//all date reports are sent except today, which is still in progress!
-			if(same_day(test, today)){
-				console.log("no need to send report now");
-				return;
-			}
-
-			send_daily_report(test);
-		}
-
-	});
-
 	// check if window focus changed
 	chrome.windows.onFocusChanged.addListener(function(windowId) {
 		
@@ -189,9 +151,56 @@ function attach_window_listeners(){
 					}
 				})
 			});
+
+			check_daily_report_status();
 		}
 		
 	});
+}
+
+function check_daily_report_status(){
+	console.log('check report status...');
+
+	//first time usage, set yesterday as default
+	if(last_date_sent == undefined){	
+		//save to local storage
+		storage.last_date_sent = yesterday;
+		return;
+	}
+
+	//the user is not logged in yet, don't need to worry about report
+	if(storage.user == undefined){
+		return;
+	}
+	
+	var today_text = x_days_ago_date(0);
+	if(today_text == daily_report_check_date){
+		console.log("already checked today");
+		return;
+	}
+
+	daily_report_check_date = today_text;
+
+	var last_date_sent = storage.last_date_sent;
+	console.log(last_date_sent);
+
+	var today = new Date();
+	var yesterday = new Date();
+	yesterday.setDate(today.getDate() - 1);
+
+	var test = new Date();
+	test.setDate(last_date_sent.getDate());
+
+	while(true){
+		test.setDate(test.getDate() + 1);
+		//all date reports are sent except today, which is still in progress!
+		if(same_day(test, today)){
+			console.log("no need to send report now");
+			return;
+		}
+
+		send_daily_report(test);
+	}
 }
 
 function send_daily_report(date){
@@ -253,6 +262,8 @@ function attach_tab_listeners(){
 		}
 		// we need this when user opens a new tab and then changes the url (the default tab is removed and a new tab is opened)
 		gen_attention(tab.url,new Date());
+
+
 	});
 
 	// listen to onUpdated event

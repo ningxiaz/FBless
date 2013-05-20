@@ -1,5 +1,6 @@
 var user = null;
 var first_day = null;
+var cur_goal = 0;
 
 $(document).ready(function(){
 	chrome.extension.sendMessage({"action":"get_user"},function(response){
@@ -16,6 +17,7 @@ $(document).ready(function(){
 
 	chrome.extension.sendMessage({"action":"get_goal"},function(response){
 		//console.log(response);
+		cur_goal = response.goal;
 		$('.notice').html("Your current goal is <em>"+response.goal+"</em> minites :)");
 	});
 
@@ -45,6 +47,7 @@ function save_new_goal(goal){
 	    if (xhr.readyState == 4) {
 	       //handle the xhr response here
 	       console.log("nice to hear back! " + xhr.responseText);
+	       cur_goal = goal;
 		   $('.notice').html("Saved!");
 	    }
 	}
@@ -72,7 +75,12 @@ function fill_stats_table(){
 
 			chrome.extension.sendMessage({"action":"get_daily_stats", "date": i}, function(response){
 				//console.log(response);
-				$('.stats').append("<div class=\"record\"><span class=\"date\">"+format_date(response.date)+"</span><span class=\"fb_times\">"+response.fb_times+"</span><span class=\"fb_time\">"+secondsToTime(response.fb_time)+"</span><span class=\"total_time\">"+secondsToTime(response.total_time)+"</span></div>");
+				if(response.fb_time > cur_goal*60){
+					$('.stats').append("<div class=\"record\"><span class=\"date\">"+format_date(response.date)+"</span><span class=\"fb_times\">"+response.fb_times+"</span><span class=\"fb_time red\">"+secondsToTime(response.fb_time)+"</span><span class=\"total_time\">"+secondsToTime(response.total_time)+"</span></div>");
+				}
+				else{
+					$('.stats').append("<div class=\"record\"><span class=\"date\">"+format_date(response.date)+"</span><span class=\"fb_times\">"+response.fb_times+"</span><span class=\"fb_time\">"+secondsToTime(response.fb_time)+"</span><span class=\"total_time\">"+secondsToTime(response.total_time)+"</span></div>");
+				}
 			});
 
 			i.setDate(i.getDate() + 1);
