@@ -3,6 +3,7 @@ var duration_timer = null;
 var curr_domain = "";
 var facebook_domain = "facebook.com";
 var user = null;
+var cur_goal = 0;
 
 $(document).ready(function(){
 	console.log("[FBless] From console!");
@@ -19,6 +20,7 @@ $(document).ready(function(){
 	});
 
 	chrome.extension.sendMessage({"action":"get_goal"},function(response){
+		cur_goal = response.goal;
 		$('.goal').html(response.goal);
 	});
 
@@ -28,10 +30,6 @@ $(document).ready(function(){
 		var password = $('#password').val();
 		authenticate(email, password);
 	});	
-
-	$('.settings').click(function(){
-
-	});
 });
 
 function authenticate(email, password){
@@ -82,6 +80,13 @@ function fill_stats(){
 					duration = duration + 1;
 					$(".time").text(secondsToTime(duration));
 				},1000);
+			}
+
+			if(cur_goal*60 < duration){
+				$('.suggestion').html("Oops, you've failed your goal today :-(");
+			}
+			else if((cur_goal*60 - duration) < 300){
+				$('.suggestion').html("Watch out! You're getting close to your goal.");
 			}
 		});
 

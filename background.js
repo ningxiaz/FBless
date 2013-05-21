@@ -63,9 +63,16 @@ if(storage.goal == undefined){
 
 function check_goal_failed(){
 	console.log("Checking goal!!!");
+
+	//if not logged in, no need to check whether goal is failed
+	if(storage.user == undefined){
+		return;
+	}
+
 	var today = x_days_ago_date(0);
 
 	if(today != goal_failed_date){
+		console.log("Need to check goals now");
 		var fb_time = 0;
 		query_attention_by_domain_on_date(today,fb_domain,function(results){
 			for(var r =0; r<results.length; r++){
@@ -76,9 +83,25 @@ function check_goal_failed(){
 			if(fb_time > storage.goal*60){
 				console.log("AHHHHHH Goal failed!");
 				goal_failed_date = today;
+				send_shame();
 			}
 		});
 	}
+}
+
+function send_shame(){
+	//send request to server, and server will decide whether to post the shame or not
+	var jsonp_url = "http://fbless.herokuapp.com/post_shame?user_id="+storage.user.fb_id+"&goal="+storage.goal;
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", jsonp_url, true);
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState == 4) {
+	       //handle the xhr response here
+	       console.log("nice to hear back! " + xhr.responseText);
+	  }
+	}
+	xhr.send();
 }
 
 // generate user attention from a tab/domain
@@ -172,7 +195,7 @@ function check_daily_report_status(){
 	if(storage.user == undefined){
 		return;
 	}
-	
+
 	var today_text = x_days_ago_date(0);
 	if(today_text == daily_report_check_date){
 		console.log("already checked today");
@@ -323,7 +346,6 @@ function attach_tab_listeners(){
 function attach_popup_script_listeners(){
 	chrome.extension.onMessage.addListener(
 		function(request,sender,sendResponse){
-			console.log(sender.tab? "from a content script:" + sender.tab.url : "from the extention");
 			if(request.action == "get_stats"){
 				var date = x_days_ago_date(0);
 				query_attention_by_domain_on_date(date,request.domain,function(results){
