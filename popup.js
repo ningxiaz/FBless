@@ -15,13 +15,17 @@ $(document).ready(function(){
 		}
 		else{
 			$('.content').show();
-			fill_stats();
-		}
-	});
+			chrome.extension.sendMessage({"action":"get_goal"},function(response){
+				cur_goal = response.goal;
+				$('.goal').html(response.goal);
+			});
 
-	chrome.extension.sendMessage({"action":"get_goal"},function(response){
-		cur_goal = response.goal;
-		$('.goal').html(response.goal);
+			chrome.extension.sendMessage({"action":"check_report"},function(response){
+				console.log(response);
+			});
+			fill_stats();
+
+		}
 	});
 
 	$('.submit').click(function(){
@@ -49,6 +53,10 @@ function authenticate(email, password){
 	       			user = rs;
 	       			$('.login').hide();
 	       			$('.content').show();
+	       			chrome.extension.sendMessage({"action":"get_goal"},function(response){
+	       				cur_goal = response.goal;
+	       				$('.goal').html(response.goal);
+	       			});
 					fill_stats();
 	       		});
 	       }

@@ -37,7 +37,7 @@ var log_level = 3;
 var yogurt_settings;
 var time_so_far = 0;
 var goal_failed_date = "";
-var daily_report_check_date = "";
+var report_last_check_date = "";
 
 //for storage variables
 var storage = chrome.storage.local;
@@ -174,8 +174,6 @@ function attach_window_listeners(){
 					}
 				})
 			});
-
-			check_daily_report_status();
 		}
 		
 	});
@@ -183,6 +181,13 @@ function attach_window_listeners(){
 
 function check_daily_report_status(){
 	console.log('check report status...');
+
+	var last_date_sent = storage.last_date_sent;
+	console.log(last_date_sent);
+
+	var today = new Date();
+	var yesterday = new Date();
+	yesterday.setDate(today.getDate() - 1);
 
 	//first time usage, set yesterday as default
 	if(last_date_sent == undefined){	
@@ -195,21 +200,6 @@ function check_daily_report_status(){
 	if(storage.user == undefined){
 		return;
 	}
-
-	var today_text = x_days_ago_date(0);
-	if(today_text == daily_report_check_date){
-		console.log("already checked today");
-		return;
-	}
-
-	daily_report_check_date = today_text;
-
-	var last_date_sent = storage.last_date_sent;
-	console.log(last_date_sent);
-
-	var today = new Date();
-	var yesterday = new Date();
-	yesterday.setDate(today.getDate() - 1);
 
 	var test = new Date();
 	test.setDate(last_date_sent.getDate());
@@ -224,6 +214,7 @@ function check_daily_report_status(){
 
 		send_daily_report(test);
 	}
+
 }
 
 function send_daily_report(date){
@@ -258,6 +249,9 @@ function send_daily_report(date){
 function ajax_send_report(report, date){
     var jsonp_url = "http://fbless.herokuapp.com/save_report?user_id="+report.user_id+"&date="+report.date+"&fb_time="+report.fb_time+"&total_time="+report.total_time;
 
+    //update last date sent
+	storage.last_date_sent = date;
+
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", jsonp_url, true);
 	xhr.onreadystatechange = function() {
@@ -265,8 +259,7 @@ function ajax_send_report(report, date){
 	       //handle the xhr response here
 	       console.log("nice to hear back! " + xhr.responseText);
 
-	       //update last date sent
-	       storage.last_date_sent = date;
+	       
 	  }
 	}
 	xhr.send();
@@ -410,6 +403,19 @@ function attach_popup_script_listeners(){
 			if(request.action == "get_first_day"){
 				sendResponse({
 					"first_day": storage.first_day
+				});
+			}
+
+			if(request.action == "check_report"){
+				var today_text = x_days_ago_date(0);
+				if(today_text != report_last_check_date){
+					console.log("should check status today");
+					check_daily_report_status();
+					report_last_check_date = today_text;
+				}
+
+				sendResponse({
+					"success": true
 				});
 			}
 

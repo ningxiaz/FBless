@@ -69,10 +69,6 @@ function fill_stats_table(){
 		i.setDate(first_day.getDate());
 
 		while(true){
-			if(same_day(i, today)){
-				return;
-			}
-
 			chrome.extension.sendMessage({"action":"get_daily_stats", "date": i}, function(response){
 				//console.log(response);
 				if(response.fb_time > cur_goal*60){
@@ -82,6 +78,10 @@ function fill_stats_table(){
 					$('.stats').append("<div class=\"record\"><span class=\"date\">"+format_date(response.date)+"</span><span class=\"fb_times\">"+response.fb_times+"</span><span class=\"fb_time\">"+secondsToTime(response.fb_time)+"</span><span class=\"total_time\">"+secondsToTime(response.total_time)+"</span></div>");
 				}
 			});
+
+			if(same_day(i, today)){
+				return;
+			}
 
 			i.setDate(i.getDate() + 1);
 		}
