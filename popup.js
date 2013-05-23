@@ -7,6 +7,8 @@ var cur_goal = 0;
 
 $(document).ready(function(){
 	console.log("[FBless] From console!");
+	//chrome.browserAction.setBadgeText({text: null});
+
 	chrome.extension.sendMessage({"action":"get_user"},function(response){
 		user = response.user;
 		//not logged in

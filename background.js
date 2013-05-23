@@ -98,10 +98,22 @@ function send_shame(){
 	xhr.onreadystatechange = function() {
 	    if (xhr.readyState == 4) {
 	       //handle the xhr response here
-	       console.log("nice to hear back! " + xhr.responseText);
+	       var res_text = xhr.responseText;
+	       console.log("nice to hear back! " + res_text);
+
+	       if(res_text.indexOf('Post') != -1){
+	       		create_notification(true);
+	       }
+	       else{
+	       		create_notification(false);
+	       }
 	  }
 	}
 	xhr.send();
+}
+
+function create_notification(to_fb){
+	chrome.browserAction.setBadgeText({text: "1"});
 }
 
 // generate user attention from a tab/domain
@@ -395,6 +407,7 @@ function attach_popup_script_listeners(){
 			}
 
 			if(request.action == "get_goal"){
+				chrome.browserAction.setBadgeText({text: ''});
 				sendResponse({
 					"goal": storage.goal
 				});

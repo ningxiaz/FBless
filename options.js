@@ -48,7 +48,7 @@ function save_new_goal(goal){
 	       //handle the xhr response here
 	       console.log("nice to hear back! " + xhr.responseText);
 	       cur_goal = goal;
-		   $('.notice').html("Saved!");
+		   $('.notice').html("Saved! Your new goal is <em>"+goal+"</em> mins.");
 	    }
 	}
 	xhr.send();
